@@ -1,0 +1,220 @@
+" use python3
+if exists('py2') && has('python')
+elseif has('python3')
+endif
+
+let g:airline_theme='ouo'
+
+" Vundle -----------------------------------------------------------------------
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'dracula/vim', { 'name': 'dracula' }
+Plugin 'bluz71/vim-nightfly-colors', { 'as': 'nightfly' }
+Plugin 'vim-scripts/c.vim'
+Plugin 'scrooloose/nerdtree.git'
+Plugin 'davidhalter/jedi-vim'
+Plugin 'xavierd/clang_complete'
+Plugin 'fatih/vim-go'
+Plugin 'rust-lang/rust.vim'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+
+call vundle#end()            " required
+" Vundle -----------------------------------------------------------------------
+
+" file type and syntax highliting on
+filetype plugin indent on
+syntax enable
+
+" whitespaces
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+highlight ExtraWhitespace ctermbg=cyan guibg=cyan
+autocmd InsertLeave * redraw!
+match ExtraWhitespace /\s\+$\| \+\ze\t/
+autocmd BufWritePre * %s/\s\+$//e
+
+
+" remove trailing white spaces
+autocmd BufWritePre * %s/\s\+$//e
+
+
+
+" nerdtree file manager "
+nmap <c-b> :NERDTreeToggle<CR>
+" build in file manager "
+"inoremap <c-b> <Esc>:Lex<cr>:vertical resize 30 <cr>
+"inoremap <c-b> <Esc>:Lex<cr>:vertical resize 30 <cr>
+
+" color scheme
+" colo leet2
+colorscheme dracula
+" colo desert
+
+hi Normal ctermbg=none
+" hi Normal guibg=none
+highlight NonText ctermbg=none
+
+
+" sessions
+noremap <F1> :mksession! .vim.session <cr>
+noremap <F2> :source .vim.session <cr>
+noremap <F3> :! rm .vim.session <cr>
+
+" for autoread to auto load
+au FocusGained,BufEnter * :silent! !
+au FocusLost,WinLeave * :silent! w
+
+" specific settings
+set mouse=i
+set fo+=t
+""set termguicolors
+set t_Co=256
+set nocursorline
+set title
+set bs=2
+set noautoindent
+set ruler
+set shortmess=aoOTI
+set nocompatible
+set showmode
+set splitbelow
+set nomodeline
+set showcmd
+set showmatch
+set tabstop=2
+set shiftwidth=2
+set expandtab
+set cinoptions=(0,m1,:1
+set tw=80
+set formatoptions=tcqro2
+set smartindent
+set laststatus=2
+"set clipboard=unnamed
+set softtabstop=2
+set showtabline=1
+set sidescroll=5
+set scrolloff=8
+set nohlsearch
+set incsearch
+set ignorecase
+set smartcase
+set foldmethod=marker
+set ttyfast
+set history=10000
+set hidden
+set colorcolumn=81
+set number relativenumber
+set nu
+set complete=.,w,b,u,t
+set completeopt=longest,menuone,preview
+set signcolumn=yes
+set noswapfile
+set foldlevelstart=0
+set wildmenu
+set wildmode=list:longest,full
+set nowrap
+set statusline=%{getcwd()}\/\%f%=%-14.(%l,%c%V%)\ %P
+set autoread
+set conceallevel=2
+set concealcursor=vin
+" setting clipboard to system clip
+set clipboard=unnamedplus
+" stop incrementing when in insert mode
+set formatoptions-=cro
+
+" backup
+set undodir=~/.vim/tmp/undo//
+set backupdir=~/.vim/tmp/backup//
+set directory=~/.vim/tmp/swap//
+set undofile
+" make directories automatically if they don't already exist
+if !isdirectory(expand(&undodir))
+    call mkdir(expand(&undodir), "p")
+endif
+if !isdirectory(expand(&backupdir))
+    call mkdir(expand(&backupdir), "p")
+endif
+if !isdirectory(expand(&directory))
+    call mkdir(expand(&directory), "p")
+endif
+
+" close brackets
+:inoremap ( ()<Esc>i
+:inoremap { {}<Esc>i
+:inoremap [ []<Esc>i
+:inoremap " ""<Esc>i
+:inoremap ' ''<Esc>i
+:inoremap ` ``<Esc>i
+
+" cursorline
+au WinLeave * set nocursorline
+au WinEnter * set cursorline
+"set cursorline
+
+" clang stuff
+let g:clang_library_path='/usr/lib/llvm/12/lib64/'
+let g:clang_user_options='|| exit 0'
+let g:clang_complete_auto = 0
+let g:clang_compelte_macros=1
+let g:clang_complete_copen = 0
+let g:clang_debug = 1
+let g:clang_snippets=1
+let g:clang_conceal_snippets=1
+let g:clang_snippets_engine='clang_complete'
+let g:clang_auto_select = 1
+let g:clang_use_library = 1
+let g:clang_complete_optional_args_in_snippets = 1
+
+" jedi
+let g:jedi#completions_enabled = 1
+let g:jedi#force_py_version = 3
+
+" youcompleteme
+let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
+
+" identLine
+let g:indentLine_char='|'
+
+" navigation disable arrow keys
+nnoremap <Left> :echo "No left for you, use h"<CR>
+nnoremap <down> :echo "No down for you, use j"<CR>
+nnoremap <right> :echo "No right for you, use l"<CR>
+nnoremap <up> :echo "No up for you, use k"<CR>
+
+" to allow vim to have colors in tmux
+if $TERM =~# '256color' && (  $TERM =~# '^tmux' )
+     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+     "set termguicolors
+endif
+
+
+
+" splits
+nmap <C-h> :split<CR>
+nmap <C-v> :vsp<CR>
+nmap <C-k> <C-w>k
+nmap <C-l> <C-w>l
+nmap <c-q> <C-w>q
+nmap <c-j> <C-w>j
+
+
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+
+" powerline symbols
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = '  '
+let g:airline_symbols.readonly = '  '
+let g:airline_symbols.linenr = ' ☰ '
+let g:airline_symbols.maxlinenr = '  '
+let g:airline_symbols.dirty='⚡'

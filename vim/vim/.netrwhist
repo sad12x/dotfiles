@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =3
+let g:netrw_dirhist_3='/'
+let g:netrw_dirhist_2='/home'
+let g:netrw_dirhist_1='/home/sadam'
+let g:netrw_dirhist_0='/home/sadam/garuda-sway-settings/etc/skel/.config'
+let g:netrw_dirhist_9='/home/sadam'
+let g:netrw_dirhist_8='/home/sadam/.bundle/cache/compact_index/rubygems.org.443.29b0360b937aa4d161703e6160654e47'
+let g:netrw_dirhist_7='/home/sadam/.bundle/cache/compact_index'
+let g:netrw_dirhist_6='/home/sadam/.bundle/cache'
+let g:netrw_dirhist_5='/home/sadam/.bundle'
+let g:netrw_dirhist_4='/home/sadam'
