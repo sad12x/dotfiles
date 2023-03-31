@@ -1,148 +1,163 @@
-
 from typing import List  # noqa: F401
+from qtile_extras.widget.decorations import BorderDecoration
 import os
+from qtile_extras import widget as extrawidgets
 import subprocess
 from os import path
-
 from libqtile import bar, layout, widget, hook, qtile
 from libqtile.config import Click, Drag, Group, ScratchPad, DropDown, Key, Match, Screen
 from libqtile.lazy import lazy
 from settings.path import qtile_path
 import colors
+from qtile_extras.resources import wallpapers
+
 
 mod = "mod4"
+wallpaperset = "/usr/share/backgrounds/katanagirl.jpg"
+
 terminal = "alacritty"
 
 keys = [
     # Open terminal
-    Key([mod], "Return", lazy.spawn(terminal), 
-        desc="Launch terminal"),
-
+    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    Key(["control", "mod1"], "l", lazy.spawn("i3lock-fancy"), desc="Launch terminal"),
+    Key(["mod1"], "Print", lazy.spawn("flameshot gui"), desc="screenshot"),
+    # sound
+    Key(
+        [],
+        "XF86AudioRaiseVolume",
+        lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%"),
+    ),
+    Key(
+        [],
+        "XF86AudioLowerVolume",
+        lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%"),
+    ),
+    Key([], "XF86AudioMute", lazy.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle")),
+    # brightness
+    Key([], "XF86MonBrightnessUp", lazy.spawn("xbacklight -inc 5")),
+    Key([], "XF86MonBrightnessDown", lazy.spawn("xbacklight -dec 10")),
     # Qtile System Actions
-    Key([mod, "shift"], "r", lazy.restart(),
-        desc="Restart Qtile"),
-    Key([mod, "shift"], "x", lazy.shutdown(),
-        desc="Shutdown Qtile"),
-
+    Key([mod, "shift"], "r", lazy.restart(), desc="Restart Qtile"),
+    Key([mod, "shift"], "x", lazy.shutdown(), desc="Shutdown Qtile"),
     # Active Window Actions
-    Key([mod], "f", lazy.window.toggle_fullscreen(), 
-        desc="Toggle window fullscreen"),
-    Key([mod], "q", lazy.window.kill(), 
-        desc="Close active window"),
-    Key([mod, "control"], "h",
+    Key([mod], "f", lazy.window.toggle_fullscreen(), desc="Toggle window fullscreen"),
+    Key([mod], "q", lazy.window.kill(), desc="Close active window"),
+    Key(
+        [mod, "control"],
+        "h",
         lazy.layout.grow_right(),
         lazy.layout.grow(),
         lazy.layout.increase_ratio(),
         lazy.layout.delete(),
-        desc="Increase active window size."
-        ),
-    Key([mod, "control"], "Right",
+        desc="Increase active window size.",
+    ),
+    Key(
+        [mod, "control"],
+        "Right",
         lazy.layout.grow_right(),
         lazy.layout.grow(),
         lazy.layout.increase_ratio(),
         lazy.layout.delete(),
-        desc="Increase active window size."
-        ),
-    Key([mod, "control"], "l",
+        desc="Increase active window size.",
+    ),
+    Key(
+        [mod, "control"],
+        "l",
         lazy.layout.grow_left(),
         lazy.layout.shrink(),
         lazy.layout.decrease_ratio(),
         lazy.layout.add(),
-        desc="Decrease active window size."
-        ),
-    Key([mod, "control"], "Left",
+        desc="Decrease active window size.",
+    ),
+    Key(
+        [mod, "control"],
+        "Left",
         lazy.layout.grow_left(),
         lazy.layout.shrink(),
         lazy.layout.decrease_ratio(),
         lazy.layout.add(),
-        desc="Decrease active window size."
-        ),
-    Key([mod, "control"], "k",
+        desc="Decrease active window size.",
+    ),
+    Key(
+        [mod, "control"],
+        "k",
         lazy.layout.grow_up(),
         lazy.layout.grow(),
         lazy.layout.decrease_nmaster(),
-        desc="Increase active window size."
-        ),
-    Key([mod, "control"], "Up",
+        desc="Increase active window size.",
+    ),
+    Key(
+        [mod, "control"],
+        "Up",
         lazy.layout.grow_up(),
         lazy.layout.grow(),
         lazy.layout.decrease_nmaster(),
-        desc="Increase active window size."
-        ),
-    Key([mod, "control"], "j",
+        desc="Increase active window size.",
+    ),
+    Key(
+        [mod, "control"],
+        "j",
         lazy.layout.grow_down(),
         lazy.layout.shrink(),
         lazy.layout.increase_nmaster(),
-        desc="Decrease active window size."
-        ),
-    Key([mod, "control"], "Down",
+        desc="Decrease active window size.",
+    ),
+    Key(
+        [mod, "control"],
+        "Down",
         lazy.layout.grow_down(),
         lazy.layout.shrink(),
         lazy.layout.increase_nmaster(),
-        desc="Decrease active window size."
-        ),
-
+        desc="Decrease active window size.",
+    ),
     # Window Focus (Arrows and Vim keys)
-    Key([mod], "Up", lazy.layout.up(),
-        desc="Change focus to window above."),
-    Key([mod], "Down", lazy.layout.down(),
-        desc="Change focus to window below."),
-    Key([mod], "Left", lazy.layout.left(),
-        desc="Change focus to window on the left."),
-    Key([mod], "Right", lazy.layout.right(),
-        desc="Change focus to window on the right."),
-    Key([mod], "k", lazy.layout.up(),
-        desc="Change focus to window above."),
-    Key([mod], "j", lazy.layout.down(),
-        desc="Change focus to window below."),
-    Key([mod], "h", lazy.layout.left(),
-        desc="Change focus to window on the left."),
-    Key([mod], "l", lazy.layout.right(),
-        desc="Change focus to window on the right."),
-
+    Key([mod], "Up", lazy.layout.up(), desc="Change focus to window above."),
+    Key([mod], "Down", lazy.layout.down(), desc="Change focus to window below."),
+    Key([mod], "Left", lazy.layout.left(), desc="Change focus to window on the left."),
+    Key(
+        [mod], "Right", lazy.layout.right(), desc="Change focus to window on the right."
+    ),
+    Key([mod], "k", lazy.layout.up(), desc="Change focus to window above."),
+    Key([mod], "j", lazy.layout.down(), desc="Change focus to window below."),
+    Key([mod], "h", lazy.layout.left(), desc="Change focus to window on the left."),
+    Key([mod], "l", lazy.layout.right(), desc="Change focus to window on the right."),
     # Qtile Layout Actions
-    Key([mod], "r", lazy.layout.reset(),
-        desc="Reset the sizes of all window in group."),
-    Key([mod], "Tab", lazy.next_layout(),
-        desc="Switch to the next layout."),
-    Key([mod, "shift"], "f", lazy.layout.flip(),
-        desc="Flip layout for Monadtall/Monadwide"),
-    Key([mod, "shift"], "space", lazy.window.toggle_floating(),
-        desc="Toggle floating window."),
-
+    Key(
+        [mod], "r", lazy.layout.reset(), desc="Reset the sizes of all window in group."
+    ),
+    Key([mod], "Tab", lazy.next_layout(), desc="Switch to the next layout."),
+    Key(
+        [mod, "shift"],
+        "f",
+        lazy.layout.flip(),
+        desc="Flip layout for Monadtall/Monadwide",
+    ),
+    Key(
+        [mod, "shift"],
+        "space",
+        lazy.window.toggle_floating(),
+        desc="Toggle floating window.",
+    ),
     # Move windows around MonadTall/MonadWide Layouts
-    Key([mod, "shift"], "Up", lazy.layout.shuffle_up(),
-        desc="Shuffle window up."),
-    Key([mod, "shift"], "Down", lazy.layout.shuffle_down(),
-        desc="Shuffle window down."),
-    Key([mod, "shift"], "Left", lazy.layout.swap_left(),
-        desc="Shuffle window left."),
-    Key([mod, "shift"], "Right", lazy.layout.swap_right(),
-        desc="Shuffle window right."),
-    Key([mod, "shift"], "k", lazy.layout.shuffle_up(),
-        desc="Shuffle window up."),
-    Key([mod, "shift"], "j", lazy.layout.shuffle_down(),
-        desc="Shuffle window down."),
-    Key([mod, "shift"], "h", lazy.layout.swap_left(),
-        desc="Shuffle window left."),
-    Key([mod, "shift"], "l", lazy.layout.swap_right(),
-        desc="Shuffle window right."),
-    
+    Key([mod, "shift"], "Up", lazy.layout.shuffle_up(), desc="Shuffle window up."),
+    Key(
+        [mod, "shift"], "Down", lazy.layout.shuffle_down(), desc="Shuffle window down."
+    ),
+    Key([mod, "shift"], "Left", lazy.layout.swap_left(), desc="Shuffle window left."),
+    Key(
+        [mod, "shift"], "Right", lazy.layout.swap_right(), desc="Shuffle window right."
+    ),
+    Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Shuffle window up."),
+    Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Shuffle window down."),
+    Key([mod, "shift"], "h", lazy.layout.swap_left(), desc="Shuffle window left."),
+    Key([mod, "shift"], "l", lazy.layout.swap_right(), desc="Shuffle window right."),
     # Switch focus to specific monitor (out of three)
-    Key([mod], "i",
-        lazy.to_screen(0),
-        desc='Keyboard focus to monitor 1'),
-    Key([mod], "o",
-        lazy.to_screen(1),
-        desc='Keyboard focus to monitor 2'),
-
+    Key([mod], "i", lazy.to_screen(0), desc="Keyboard focus to monitor 1"),
+    Key([mod], "o", lazy.to_screen(1), desc="Keyboard focus to monitor 2"),
     # Switch focus of monitors
-    Key([mod], "period",
-        lazy.next_screen(),
-        desc='Move focus to next monitor'),
-    Key([mod], "comma",
-        lazy.prev_screen(),
-        desc='Move focus to prev monitor'),
+    Key([mod], "period", lazy.next_screen(), desc="Move focus to next monitor"),
+    Key([mod], "comma", lazy.prev_screen(), desc="Move focus to prev monitor"),
 ]
 
 # Create labels for groups and assign them a default layout.
@@ -151,10 +166,25 @@ groups = []
 group_names = ["1", "2", "3", "4", "5"]
 
 group_labels = ["first", "second", "third", "4th", "5th"]
-#group_labels = ["www", "todo", "edit", "mail", "term", "video", "gimp", "files", "social", "vm", "mus", "chat"]
-#group_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+# group_labels = ["www", "todo", "edit", "mail", "term", "video", "gimp", "files", "social", "vm", "mus", "chat"]
+# group_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 
-group_layouts = ["monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall"]
+group_layouts = [
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+    "monadtall",
+]
 
 # Add group names, labels, and default layouts to the groups object.
 for i in range(len(group_names)):
@@ -163,59 +193,128 @@ for i in range(len(group_names)):
             name=group_names[i],
             layout=group_layouts[i].lower(),
             label=group_labels[i],
-        ))
+        )
+    )
 
 # Add group specific keybindings
 for i in groups:
-    keys.extend([
-        Key([mod], i.name, lazy.group[i.name].toscreen(),
-            desc="Mod + number to move to that group."),
-        Key(["mod1"], "Tab", lazy.screen.next_group(),
-            desc="Move to next group."),
-        Key(["mod1", "shift"], "Tab", lazy.screen.prev_group(),
-            desc="Move to previous group."),
-        Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
-            desc="Move focused window to new group."),
-    ])
+    keys.extend(
+        [
+            Key(
+                [mod],
+                i.name,
+                lazy.group[i.name].toscreen(),
+                desc="Mod + number to move to that group.",
+            ),
+            Key(["mod1"], "Tab", lazy.screen.next_group(), desc="Move to next group."),
+            Key(
+                ["mod1", "shift"],
+                "Tab",
+                lazy.screen.prev_group(),
+                desc="Move to previous group.",
+            ),
+            Key(
+                [mod, "shift"],
+                i.name,
+                lazy.window.togroup(i.name),
+                desc="Move focused window to new group.",
+            ),
+        ]
+    )
 
 # Define scratchpads
-groups.append(ScratchPad("scratchpad", [
-    DropDown("term", "alacritty --class=scratch", width=0.8, height=0.8, x=0.1, y=0.1, opacity=1),
-    DropDown("term2", "alacritty --class=scratch", width=0.8, height=0.8, x=0.1, y=0.1, opacity=1),
-    DropDown("ranger", "alacritty --class=ranger -e ranger", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
-    DropDown("volume", "alacritty --class=volume -e pulsemixer", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
-    DropDown("mus", "alacritty --class=mus -e ncmpcpp", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
-    DropDown("news", "alacritty --class=news -e newsboat", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
-
-]))
+groups.append(
+    ScratchPad(
+        "scratchpad",
+        [
+           # DropDown(
+           #     "term",
+           #     "alacritty --class=scratch",
+           #     width=0.8,
+           #     height=0.8,
+           #     x=0.1,
+           #     y=0.1,
+           #     opacity=1,
+           # ),
+           # DropDown(
+           #     "term2",
+           #     "alacritty --class=scratch",
+           #     width=0.8,
+           #     height=0.8,
+           #     x=0.1,
+           #     y=0.1,
+           #     opacity=1,
+           # ),
+            DropDown(
+                "ranger",
+                "alacritty --class=ranger -e ranger",
+                width=0.8,
+                height=0.8,
+                x=0.1,
+                y=0.1,
+                opacity=0.9,
+            ),
+           # DropDown(
+           #     "volume",
+           #     "alacritty --class=volume -e pulsemixer",
+           #     width=0.8,
+           #     height=0.8,
+           #     x=0.1,
+           #     y=0.1,
+           #     opacity=0.9,
+           # ),
+           # DropDown(
+           #     "mus",
+           #     "alacritty --class=mus -e ncmpcpp",
+           #     width=0.8,
+           #     height=0.8,
+           #     x=0.1,
+           #     y=0.1,
+           #     opacity=0.9,
+           # ),
+            DropDown(
+                "lf",
+                "alacritty --class=lf -e lf ",
+                width=0.8,
+                height=0.8,
+                x=0.1,
+                y=0.1,
+                opacity=0.9,
+            ),
+        ],
+    )
+)
 
 # Scratchpad keybindings
-keys.extend([
-    Key([mod], "n", lazy.group['scratchpad'].dropdown_toggle('term')),
-    Key([mod], "c", lazy.group['scratchpad'].dropdown_toggle('ranger')),
-    Key([mod], "v", lazy.group['scratchpad'].dropdown_toggle('volume')),
-    Key([mod], "m", lazy.group['scratchpad'].dropdown_toggle('mus')),
-    Key([mod], "b", lazy.group['scratchpad'].dropdown_toggle('news')),
-    Key([mod, "shift"], "n", lazy.group['scratchpad'].dropdown_toggle('term2')),
-])
+keys.extend(
+    [
+        #Key([mod], "n", lazy.group["scratchpad"].dropdown_toggle("term")),
+        Key([mod], "b", lazy.group["scratchpad"].dropdown_toggle("ranger")),
+        #Key([mod], "v", lazy.group["scratchpad"].dropdown_toggle("volume")),
+        #Key([mod], "m", lazy.group["scratchpad"].dropdown_toggle("mus")),
+        Key([mod], "c", lazy.group["scratchpad"].dropdown_toggle("lf")),
+        #Key([mod, "shift"], "n", lazy.group["scratchpad"].dropdown_toggle("term2")),
+    ]
+)
 
 colors, backgroundColor, foregroundColor, workspaceColor, chordColor = colors.gruvbox()
 
 # Define layouts and layout themes
 layout_theme = {
-        "margin":5,
-        "border_width": 4,
-        "border_focus": colors[2],
-        "border_normal": backgroundColor
-    }
+    "margin": 3,
+    "border_width": 0,
+    "border_focus": colors[7],
+    "border_normal": backgroundColor,
+}
 
 layouts = [
     layout.MonadTall(**layout_theme),
     layout.MonadWide(**layout_theme),
     layout.Floating(**layout_theme),
     layout.RatioTile(**layout_theme),
-    layout.Max(**layout_theme)
+    layout.Max(**layout_theme),
 ]
+
 
 # Mouse callback functions
 def launch_menu():
@@ -224,106 +323,137 @@ def launch_menu():
 
 # Define Widgets
 widget_defaults = dict(
-    font="JetBrainsMono Nerd Font",
-    fontsize = 12,
-    padding = 2,
-    background=backgroundColor
+    font="JetBrainsMono Nerd Font", fontsize=12, padding=2, background=backgroundColor
 )
+
 
 def init_widgets_list(monitor_num):
     widgets_list = [
         widget.GroupBox(
             font="JetBrainsMono Nerd Font",
-            fontsize = 16,
-            margin_y = 2,
-            margin_x = 4,
-            padding_y = 6,
-            padding_x = 6,
-            borderwidth = 2,
-            disable_drag = True,
-            active = colors[4],
-            inactive = foregroundColor,
-            hide_unused = False,
-            rounded = False,
-            highlight_method = "line",
-            highlight_color = [backgroundColor, backgroundColor],
-            this_current_screen_border = colors[5],
-            this_screen_border = colors[7],
-            other_screen_border = colors[6],
-            other_current_screen_border = colors[6],
-            urgent_alert_method = "line",
-            urgent_border = colors[9],
-            urgent_text = colors[1],
-            foreground = foregroundColor,
-            background = backgroundColor,
-            use_mouse_wheel = False
+            fontsize=16,
+            margin_y=2,
+            margin_x=4,
+            padding_y=6,
+            padding_x=6,
+            borderwidth=2,
+            disable_drag=True,
+            active=colors[4],
+            inactive=foregroundColor,
+            hide_unused=False,
+            rounded=False,
+            highlight_method="line",
+            highlight_color=[backgroundColor, backgroundColor],
+            this_current_screen_border=colors[5],
+            this_screen_border=colors[7],
+            other_screen_border=colors[6],
+            other_current_screen_border=colors[6],
+            urgent_alert_method="line",
+            urgent_border=colors[9],
+            urgent_text=colors[1],
+            foreground=foregroundColor,
+            background=backgroundColor,
+            use_mouse_wheel=False,
         ),
         widget.TaskList(
-            icon_size = 0,
-            font = "JetBrainsMono Nerd Font",
-            foreground = colors[0],
-            background = colors[2],
-            borderwidth = 0,
-            border = colors[6],
-            margin = 0,
-            padding = 8,
-            highlight_method = "block",
-            title_width_method = "uniform",
-            urgent_alert_method = "border",
-            urgent_border = colors[1],
-            rounded = False,
-            txt_floating = "🗗 ",
-            txt_maximized = "🗖 ",
-            txt_minimized = "🗕 ",
+            icon_size=0,
+            font="JetBrainsMono Nerd Font",
+            foreground=colors[0],
+            background=colors[2],
+            borderwidth=0,
+            border=colors[6],
+            margin=0,
+            padding=4,
+            highlight_method="block",
+            title_width_method="uniform",
+            urgent_alert_method="border",
+            urgent_border=colors[1],
+            rounded=False,
+            txt_floating="🗗 ",
+            txt_maximized="🗖 ",
+            txt_minimized="🗕 ",
         ),
         widget.Sep(
-            linewidth = 1,
-            padding = 10,
-            foreground = colors[5],
-            background = backgroundColor
+            linewidth=1, padding=10, foreground=colors[5], background=backgroundColor
+        ),
+        widget.Volume(
+            foreground = colors[7],
+            background = colors[0],
+            padding = 5,
+            decorations=[
+            BorderDecoration(
+                colour = colors[7],
+                border_width = [0, 0, 2, 0],
+                padding_x = 5,
+                padding_y = None,
+                )
+            ],
         ),
         widget.OpenWeather(
-            app_key = "ef610f2319793e522d66e2ee63455f64",
-            cityid = "2648579",
-            format = '{icon} {main_temp}°',
-            metric = False,
-            font = "JetBrainsMono Nerd Font",
-            foreground = foregroundColor,
+            app_key="ef610f2319793e522d66e2ee63455f64",
+            cityid="2648579",
+            format="{icon} {main_temp}°",
+            metric=True,
+            weather_symbols={
+                "Unknown": "",
+                "01d": " ",
+                "01n": "🌕",
+                "02d": " ",
+                "02n": " ",
+                "03d": " ",
+                "03n": " ",
+                "04d": " ",
+                "04n": " ",
+                "09d": "⛆ ",
+                "09n": "⛆ ",
+                "10d": " ",
+                "10n": " ",
+                "11d": "🌩 ",
+                "11n": "🌩 ",
+                "13d": "❄ ",
+                "13n": "❄ ",
+                "50d": "🌫 ",
+                "50n": "🌫 ",
+            },
+            font="JetBrainsMono Nerd Font",
+            foreground=foregroundColor,
         ),
-       widget.Sep(
-            linewidth = 0,
-            padding = 10
-        ),
+        widget.Battery(
+                padding=4,
+                linewidth=0,
+                low_percenttage=15,
+                format="{percent:2.0%}"),
+        widget.Sep(linewidth=0, padding=10),
+        #extrawidgets.StatusNotifier(icon_size=15,),
         widget.Clock(
-            format='%H:%M',
-            font = "JetBrainsMono Nerd Font",
-            padding = 10,
-            foreground = foregroundColor
+            format="%H:%M",
+            font="JetBrainsMono Nerd Font",
+            padding=10,
+            foreground=foregroundColor,
         ),
         widget.Systray(
-            background = backgroundColor,
-            icon_size = 10,
-            padding = 4,
+            background=backgroundColor,
+            icon_size=10,
+            padding=4,
         ),
         widget.Sep(
-            linewidth = 1,
-            padding = 10,
-            foreground = colors[5],
-            background = backgroundColor
+            linewidth=1, padding=10, foreground=colors[5], background=backgroundColor
         ),
         widget.CurrentLayoutIcon(
-            scale = 0.2,
-            foreground = colors[6],
-            background = colors[6],
+            scale=0.7,
+            foreground=colors[6],
+            background=colors[6],
         ),
     ]
 
     return widgets_list
 
+
 def init_secondary_widgets_list(monitor_num):
     secondary_widgets_list = init_widgets_list(monitor_num)
     del secondary_widgets_list[16:17]
     return secondary_widgets_list
+
 
 widgets_list = init_widgets_list("1")
 secondary_widgets_list = init_secondary_widgets_list("2")
@@ -336,17 +466,19 @@ screens = [
             widgets=widgets_list,
             size=25,
             background=backgroundColor,
-            margin=4, 
-            opacity=0.8
+            margin=4,
+            opacity=0.8,
         ),
+        wallpaper=wallpaperset,
+        wallpaper_mode="fill",
     ),
     Screen(
         top=bar.Bar(
             widgets=secondary_widgets_list,
             size=36,
             background=backgroundColor,
-            margin=6, 
-            opacity=0.8
+            margin=6,
+            opacity=0.8,
         ),
     ),
     Screen(
@@ -354,44 +486,55 @@ screens = [
             widgets=secondary_widgets_list_2,
             size=36,
             background=backgroundColor,
-            margin=6, 
-            opacity=0.8
+            margin=6,
+            opacity=0.8,
         ),
     ),
 ]
 
 # Drag floating layouts.
 mouse = [
-    Drag([mod], "Button1", lazy.window.set_position_floating(),
-         start=lazy.window.get_position()),
-    Drag([mod], "Button3", lazy.window.set_size_floating(),
-         start=lazy.window.get_size()),
-    Click([mod], "Button2", lazy.window.bring_to_front())
+    Drag(
+        [mod],
+        "Button1",
+        lazy.window.set_position_floating(),
+        start=lazy.window.get_position(),
+    ),
+    Drag(
+        [mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()
+    ),
+    Click([mod], "Button2", lazy.window.bring_to_front()),
 ]
 
-#Currently running Qtile in XFCE, so autostart script isn't necessary.  Uncomment if needed.
-#Startup applications
+
+# Currently running Qtile in XFCE, so autostart script isn't necessary.  Uncomment if needed.
+# Startup applications
 @hook.subscribe.startup_once
 def autostart():
-   home = os.path.expanduser('~/.config/qtile/scripts/autostart.sh')
-   subprocess.run([home])
+    home = os.path.expanduser("~/.config/qtile/scripts/autostart.sh")
+    subprocess.run([home])
+
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List
 follow_mouse_focus = True
 bring_front_click = False
 cursor_warp = False
-floating_layout = layout.Floating(float_rules=[
-    # Run the utility of `xprop` to see the wm class and name of an X client.
-    *layout.Floating.default_float_rules,
-    Match(wm_class='confirmreset'),  # gitk
-    Match(wm_class='makebranch'),  # gitk
-    Match(wm_class='maketag'),  # gitk
-    Match(wm_class='ssh-askpass'),  # ssh-askpass
-    Match(title='branchdialog'),  # gitk
-    Match(title='pinentry'),  # GPG key password entry
-    Match(wm_class='Mailspring'), # Mail client
-], fullscreen_border_width = 0, border_width = 0)
+floating_layout = layout.Floating(
+    float_rules=[
+        # Run the utility of `xprop` to see the wm class and name of an X client.
+        *layout.Floating.default_float_rules,
+        Match(wm_class="confirmreset"),  # gitk
+        Match(wm_class="makebranch"),  # gitk
+        Match(wm_class="maketag"),  # gitk
+        Match(wm_class="ssh-askpass"),  # ssh-askpass
+        Match(title="branchdialog"),  # gitk
+        Match(title="pinentry"),  # GPG key password entry
+        Match(wm_class="Mailspring"),  # Mail client
+    ],
+    fullscreen_border_width=0,
+    border_width=0,
+)
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 reconfigure_screens = True

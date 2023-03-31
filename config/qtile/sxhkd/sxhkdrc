@@ -19,7 +19,7 @@ alt + z; {a,s}
    {viddesc, poddesc}
 
 super + y
-	emacs
+	nvim
 
 super + g; {l,g,k,a,o} 
   {lowriter,gimp,kdenlive,flatpak run org.audacityteam.Audacity,flatpak run com.obsproject.Studio}

@@ -12,7 +12,7 @@ from settings.path import qtile_path
 
 
 def load_theme():
-    theme = "nord-theme"
+    theme = "arc"
 
     config = path.join(qtile_path, "config.json")
     if path.isfile(config):
