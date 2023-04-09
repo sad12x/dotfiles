@@ -326,6 +326,7 @@ widget_defaults = dict(
     font="JetBrainsMono Nerd Font", fontsize=12, padding=2, background=backgroundColor
 )
 
+
 def init_widgets_list(monitor_num):
     widgets_list = [
         widget.GroupBox(
@@ -362,7 +363,7 @@ def init_widgets_list(monitor_num):
             borderwidth = 0,
             border = colors[6],
             margin = 0,
-            padding = 4, # text name apps 
+            padding = 8,
             highlight_method = "block",
             title_width_method = "uniform",
             urgent_alert_method = "border",
@@ -451,7 +452,6 @@ def init_widgets_list(monitor_num):
             background = colors[6],
         ),
     ]
-
     return widgets_list
 
 
@@ -533,7 +533,7 @@ floating_layout = layout.Floating(
         Match(wm_class="confirmreset"),  # gitk
         Match(wm_class="makebranch"),  # gitk
         Match(wm_class="maketag"),  # gitk
-        Match(wm_class="Places"),  # firefox
+        Match(wm_class="ssh-askpass"),  # ssh-askpass
         Match(title="branchdialog"),  # gitk
         Match(title="pinentry"),  # GPG key password entry
         Match(wm_class="Mailspring"),  # Mail client

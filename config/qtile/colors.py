@@ -178,7 +178,43 @@ def whitey():
 	foregroundColorTwo = "#2a2a2a"
 	return colors, backgroundColor, foregroundColor, workspaceColor, foregroundColorTwo
 
+def tokyonight():
+	colors = [["#1a1b26","#1a1b26"],   # black [0]
+			   ["#f7768e", "#f7768e"],  # red [1]
+			   ["#9ece6a", "#9ece6a"],  # green [2]
+			   ["#e0af68", "#e0af68"],  # yellow [3]
+			   ["#7dcfff", "#7dcfff"],  # cyan [4]
+			   ["#bb9af7", "#bb9af7"],  # magenta [5]
+			   ["#7aa2f7", "#7aa2f7"],  # blue [6]
+			   ["#414868", "#414868"],  # white [7]
+			   ["#ff9e64", "#ff9e64"],  # orange  [8]
+			   ['#f7768e', '#f7768e'],  #red [9]
+			   ["#e0af68", "#e0af68"]]  #yellow [10]
+			   
+	backgroundColor = "#1a1b26"
+	foregroundColor = "#c0caf5"
+	workspaceColor = "#1a1b26"
+	foregroundColorTwo = "#1a1b26"
+	return colors, backgroundColor, foregroundColor, workspaceColor, foregroundColorTwo
 
 
+def frappe():
+	colors = [["#303446","#303446"],   # black [0]
+			   ["#E78284", "#E78284"],  # red [1]
+			   ["#A6D189", "#A6D189"],  # green [2]
+			   ["#E5C890", "#E5C890"],  # yellow [3]
+			   ["#99D1DB", "#99D1DB"],  # cyan [4]
+			   ["#F4B8E4", "#F4B8E4"],  # magenta [5]
+			   ["#8CAAEE", "#8CAAEE"],  # blue [6]
+			   ["#C6D0F5", "#C6D0F5"],  # white [7]
+			   ["#EF9F76", "#EF9F76"],  # orange  [8]
+			   ['#f7768e', '#f7768e'],  #red [9]
+			   ["#E5C890", "#E78284"]]  #yellow [10]
+			   
+	backgroundColor = "#303446" # overall 
+	foregroundColor = "#EF9F76" # text
+	workspaceColor = "#C6D0F5"
+	foregroundColorTwo = "#BABBF1"
+	return colors, backgroundColor, foregroundColor, workspaceColor, foregroundColorTwo
 
 
