@@ -1,3 +1,8 @@
+"""
+credit: thelinuxcast
+https://gitlab.com/thelinuxcast/my-dots/-/tree/master/qtile
+"""
+
 from typing import List  # noqa: F401
 from qtile_extras.widget.decorations import BorderDecoration
 import os
