@@ -18,13 +18,14 @@ from qtile_extras.resources import wallpapers
 
 
 mod = "mod4"
-wallpaperset = "/usr/share/backgrounds/katanagirl.jpg"
+wallpaperset = "/usr/share/backgrounds/i9HGPKn.jpg"
 
-terminal = "alacritty"
+terminal = "kitty"
 
 keys = [
     # Open terminal
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    Key([mod], "d", lazy.spawn("rofi -show drun -show-icons"), desc="Launch rofi"),
     Key(["control", "mod1"], "l", lazy.spawn("i3lock-fancy"), desc="Launch terminal"),
     Key(["mod1"], "Print", lazy.spawn("flameshot gui"), desc="screenshot"),
     # sound
@@ -170,7 +171,7 @@ groups = []
 
 group_names = ["1", "2", "3", "4", "5"]
 
-group_labels = ["first", "second", "third", "4th", "5th"]
+group_labels = ["󰮇", "󰡾", "", "󰊕", "󰀱"]
 # group_labels = ["www", "todo", "edit", "mail", "term", "video", "gimp", "files", "social", "vm", "mus", "chat"]
 # group_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 
@@ -302,7 +303,7 @@ keys.extend(
     ]
 )
 
-colors, backgroundColor, foregroundColor, workspaceColor, chordColor = colors.gruvbox()
+colors, backgroundColor, foregroundColor, workspaceColor, chordColor = colors.dracula()
 
 # Define layouts and layout themes
 layout_theme = {
@@ -321,9 +322,6 @@ layouts = [
 ]
 
 
-# Mouse callback functions
-def launch_menu():
-    qtile.cmd_spawn("rofi -show drun -show-icons")
 
 
 # Define Widgets
@@ -357,7 +355,7 @@ def init_widgets_list(monitor_num):
             urgent_text = colors[1],
             foreground = foregroundColor,
             background = backgroundColor,
-            use_mouse_wheel = False
+            use_mouse_wheel = False,
         ),
         widget.TaskList(
             icon_size = 0,
@@ -367,7 +365,7 @@ def init_widgets_list(monitor_num):
             borderwidth = 0,
             border = colors[6],
             margin = 0,
-            padding = 4, # text name apps 
+            padding = 7, # text name apps 
             highlight_method = "block",
             title_width_method = "uniform",
             urgent_alert_method = "border",
@@ -383,14 +381,6 @@ def init_widgets_list(monitor_num):
             foreground = colors[5],
             background = backgroundColor
         ),
-        widget.OpenWeather(
-            #app_key = "",
-            cityid = "2648579",
-            format = '{icon} {main_temp}°',
-            metric = True,
-            font = "JetBrainsMono Nerd Font",
-            foreground = foregroundColor,
-        ),
        widget.Sep(
             linewidth = 0,
             padding = 10
@@ -400,9 +390,9 @@ def init_widgets_list(monitor_num):
             charge_char='char',
             empty_char='empty',
             notify_below=15,
-            foreground = foregroundColor,
+            foreground = colors[10],
             fmt='{}',
-            format = '{percent:2.0%}',
+            format = '󰁹 {percent:2.0%}',
             padding = 5,
         ),
         widget.Sep(
@@ -415,14 +405,11 @@ def init_widgets_list(monitor_num):
             font = "JetBrainsMono Nerd Font",
             foreground = colors[10],
         ),
-        widget.PulseVolume(
-            foreground = foregroundColor,
-            font='Open Sans semibold',
-            fontsize=12,
-            limit_max_volume=True,
-            padding=8,
-            fmt='{}',
-        ),
+        extrawidgets.Volume(
+            foreground=foregroundColor,
+            padding=10,
+            fmt='Vol: {}',
+         ),
         widget.Sep(
             linewidth = 0,
             padding = 10
@@ -451,7 +438,7 @@ def init_widgets_list(monitor_num):
             background = backgroundColor
         ),
         widget.CurrentLayoutIcon(
-            scale = 0.5,
+            scale = 0.8,
             foreground = colors[6],
             background = colors[6],
         ),
@@ -542,6 +529,7 @@ floating_layout = layout.Floating(
         Match(title="branchdialog"),  # gitk
         Match(title="pinentry"),  # GPG key password entry
         Match(wm_class="Mailspring"),  # Mail client
+        Match(wm_class="burp-StartBurp"),  # Mail client
     ],
     fullscreen_border_width=0,
     border_width=0,
